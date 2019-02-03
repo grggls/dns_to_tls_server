@@ -1,9 +1,9 @@
-# scratch space for working on this piece of code in the python REPL interpreter
-
 import socket
 import ssl
+import dns
 import binascii
 from importlib import reload # --> ssock.reload(ssock) is super-handy
+import logging
 
 hostname = '1.1.1.1'
 port = 853
@@ -21,13 +21,16 @@ def connectsend(query):
     sock.settimeout(10)
     wrsock = context.wrap_socket(sock, server_hostname=hostname)
     wrsock.connect((hostname, port))
+    cfcert = wrsock.getpeercert()
 
     # pad and encode and send and receive 
-    wrsock.send(binascii.hexlify(padencode(query)))
-    data = wrsock.recv(1024)
+    wrsock.send(padencode(query))
+    data = wrsock.recv(4096)
     print(data)
     return data
 
 # format query with two-byte length prefix per RFC1035
-def padencode(query):
-  return str.encode("\x00" + chr(len(query)) + query)
+def padencode(domain):
+    import dns.message as message
+    msg = message.make_query(domain, 'A') 
+    return binascii.hexlify(msg.to_text().encode())

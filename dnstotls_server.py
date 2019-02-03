@@ -47,8 +47,8 @@ def dnstotls(port, maxconn, stub):
                 else:
                   logging.error('invalid stub resolver configured')
 
-                connection.sendall(result.encode())
-                logging.warning('response sent to %s: %s', client_address, query)
+                connection.sendall(result)
+                logging.warning('response for query %s sent to %s: %s', query, client_address, result)
 
         # promise to clean up the connection
         finally:

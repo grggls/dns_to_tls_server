@@ -54,4 +54,4 @@ run.ssock: build.ssock rm
 interactive: build rm
 	docker run -it $(TAG):latest /bin/sh
 
-up: run
+up: run.ssock
