@@ -15,7 +15,7 @@ We chose to use Python3 for this exercise because it is the language we're most 
 
 While we fully recognize the nature of the brief and the desire to have a DNS proxy listening on port 53, we chose a non-privileged port for the initial implementation, in order to simplify development and testing, without the need for privileged runtimes.
 
-For the sake of brevity and extensibility, we excluded all tooling necessary to make this service run well and remain supportable in a microservices environment: exporting metrics in a manner consumable by something like Prometheus, log formatting, the ability to talk with a SIEM service, etc.
+For the sake of brevity and extensibility, we excluded quite a bit of tooling necessary to make this service run well and remain supportable in a microservices environment: exporting metrics in a manner consumable by something like Prometheus, standard log formatting beyond what's needed to debug the service, the ability to talk with a SIEM service, etc. Perhaps in a full-bore microservice implementation, we'll be able to import a nice library to include these primitives in to our service almost as an afterthought.
 
 ## Follow-up Questions:
  ### *What are the security concerns for this kind of service?*
