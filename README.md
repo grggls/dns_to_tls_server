@@ -9,6 +9,13 @@ A working example of a DNS to DNS-over-TLS proxy that can:
 1. This README.md file
 
 ## Implementation Details:
+We like to start a software project with a couple of niceties:
+ - a Makefile to make code->run->validate loops as easy as possible
+ - a target in that Makefile to quickly drop us into an interactive shell on the container where we're working
+ - another target in that Makefile that makes working with a local docker repo fast and painless
+ - some semblance of how our code will be packaged and run in production (docker here, thankfully) and its mirror in this code->run->validate loop. Here that was as easy as a Dockerfile and a requirements.txt file called from within it. In more complicated projects that might involve running artifactory and jenkins locally, so that we know our code will play nice when it's finally integrated. (That's way too complicated a path to production for my liking. Complicated development environments are a code smell.)
+
+I don't have a huge amount of experience with wire protocols to be honest. The last time I had to think about composing datagrams, I was at university. I took the first step of making this work with a piece of already written [software](https://github.com/curl/doh). Once I had my project working and testing in a comfortable way, and had a sense of what a DNS over HTTPS resolver traffic looks like, what kinds of validation and sanitization the inputs and outputs might need, I moved on to implementing my own DNS over TLSresolver.
 
 ## Choices:
 We chose to use Python3 for this exercise because it is the language we're most comfortable with.
@@ -33,3 +40,5 @@ For the sake of brevity and extensibility, we excluded quite a bit of tooling ne
  ### *What other improvements do you think would be interesting to add to the project?*
 
  We can offer a performance benefit with this service, along with the security benefits already outlined, by caching Cloudflare responses within the service for a configurable TTL and responding to new queries with those cached values. Performance benefits in saved network wait time would grow linearly with each DNS query that we were able to successfully serve from cache.
+
+ As we have implemented it, the proxy can make use of a number of stub resolvers. It might be interesting to add a profiler to this proxy in a later version, in order to make some qualitative determination about the most performant implementation.
