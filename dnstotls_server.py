@@ -4,6 +4,7 @@ import socket, sys, subprocess
 import logging
 import argparse
 import validators
+import ssock
 
 def dnstotls(port, maxconn, stub):
     # create a TCP socket
@@ -41,6 +42,8 @@ def dnstotls(port, maxconn, stub):
                   result = resolve_with_curl(query); logging.info(result)
                 elif stub == 'kdig':
                   result = resolve_with_kdig(query); logging.info(result)
+                elif stub == 'ssock':
+                  result = ssock.connectsend(query); logging.info(result)
                 else:
                   logging.error('invalid stub resolver configured')
 
@@ -76,7 +79,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-p", "--port", action="store", type=int, default=1053, help="listening port for incoming DNS queries")
     parser.add_argument("-c", "--connections", action="store", type=int, default=1, help="maximum concurrent connections to the service")
-    parser.add_argument("-s", "--stub", action="store", type=str, default="doh", choices=["doh", "curl", "kdig"], help="choose which stub resolver to use", const="doh", nargs="?")
+    parser.add_argument("-s", "--stub", action="store", type=str, default="doh", choices=["doh", "curl", "kdig", "ssock"], help="choose which stub resolver to use", const="doh", nargs="?")
     args = parser.parse_args()
 
     # runit
