@@ -17,6 +17,8 @@ We like to start a software project with a couple of niceties:
 
 I don't have a huge amount of experience with wire protocols to be honest. The last time I had to think about composing datagrams, I was at university. I took the first step of making this work with a piece of already written [software](https://github.com/curl/doh). Once I had my project working and testing in a comfortable way, and had a sense of what a DNS over HTTPS resolver traffic looks like, what kinds of validation and sanitization the inputs and outputs might need, I moved on to implementing my own DNS over TLSresolver.
 
+As regards error checking and client experience, we expect that it will be machines, not humans, making the most of this service. Since we've all seen machines misbehave, and because we have no details about the microservice environment, API gateways, or if there's any backpressure implemented in this system, we chose to implement our server in a somewhat defensive way: client connections that send valid DNS queries will be maintained and a (within reason) unlimited number of requests can be made on the same reused connection. Invalid DNS queries, non-utf-8 characters, and any type of unvalidatedable input will result in the connection being closed, at which point the client of this service will need to reconnect.
+
 ## Choices:
 We chose to use Python3 for this exercise because it is the language we're most comfortable with.
 
@@ -32,6 +34,8 @@ For the sake of brevity and extensibility, we excluded quite a bit of tooling ne
  Therefore it is essentially that this service minimize or completely solve for these concerns. As a TLS'd proxy connection, our service should not leak information or represent an attack surface for a MITM attack. Exceptions to this rule might be in cases where the endpoint (Cloudflare) CA has been compromised, or where our service has been made to ingest a compromised CA.
 
  Regarding general Docker security, we endeavored to decrease the blast radius of a compromised DNS-over-TLS proxy by attempting to run the daemon as a non-root user. We can further decrease the privilege of a running instance of this service by using a non-privileged port number (greater than 1024). Choosing 8053, for example, would require fewer privileges from the scheduling Docker daemon.
+
+ Misbehaving or adversarial clients of this service will see their connection reset immediately. There are some edge cases I noticed during implementation that aren't handled here, specifically with non-blocking I/O. Better error handling, tracking of misbehaving client IPs, and flushing of the socket would all make this a sturdier service in production.
 
  ### *Considering a microservice architecture; how would you see this the dns to dns-over-tls proxy used?*
 

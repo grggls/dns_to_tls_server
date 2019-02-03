@@ -25,7 +25,12 @@ def dnstotls(port, maxconn, stub):
             while True:
                 data = connection.recv(16)
                 if not data: logging.warning('no data from', client_address); break
-                query = data.strip().decode('utf-8')
+
+                try:
+                    query = data.strip().decode('utf-8')
+                except UnicodeDecodeError:
+                    logging.warning('non-unicode byte detected (keyboard interrupt perhaps?)'); break
+
                 logging.warning('query received for %s', query)
                 if not validators.domain(query): logging.warning('invalid url {} from {}'.format(query, client_address)); break
 
