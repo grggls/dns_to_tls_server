@@ -33,6 +33,9 @@ build.curl:
 build.kdig:
 	docker build --build-arg STUB=kdig --tag $(TAG) .
 
+build.ssock:
+	docker build --build-arg STUB=ssock --tag $(TAG) .
+
 script:
 	python3 dnstotls_server.py --port 8053 --connections 3
 
@@ -45,7 +48,10 @@ run.curl: build.curl rm
 run.kdig: build.kdig rm
 	docker run --name dnstlsproxy -p 8053:8053/tcp $(TAG)
 
+run.ssock: build.ssock rm
+	docker run --name dnstlsproxy -p 8053:8053/tcp $(TAG)
+
 interactive: build rm
 	docker run -it $(TAG):latest /bin/sh
 
-up: run
+up: run.ssock
