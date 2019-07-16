@@ -10,12 +10,19 @@ port = 853
 
 # secure context wrapped tcp socket ready for writing
 def connectsend(query):
+  context = context()
+  socket = socket(context)
+  
+
+def context():
     # set default/secure context
     context = ssl.create_default_context()
     context = ssl.SSLContext(ssl.PROTOCOL_TLS)
     context.verify_mode = ssl.CERT_REQUIRED
     context.load_verify_locations('/etc/ssl/cert.pem')
+    return context
 
+def socket(context):
     # create a socket and wrap it
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(10)
@@ -24,10 +31,11 @@ def connectsend(query):
     cfcert = wrsock.getpeercert()
 
     # pad and encode and send and receive 
-    wrsock.send(padencode(query))
-    data = wrsock.recv(4096)
-    print(data)
-    return data
+    # wrsock.send(padencode(query))
+    # data = wrsock.recv(4096)
+    # print(data)
+    # return data
+    return wrsock
 
 # format query with two-byte length prefix per RFC1035
 def padencode(domain):
